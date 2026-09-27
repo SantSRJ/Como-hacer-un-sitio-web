@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tu primer sitio web desde cero | Taller de Programación II</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF1F5; --panel:#FFFFFF; --panel-2:#F6F8FB; --ink:#16213A; --muted:#56627A; --line:#CBD3DF;
+  --accent:#2747B8; --accent-ink:#FFFFFF; --tag:#0B6E6E; --attr:#8B3A73; --val:#9A4A12; --kw:#2747B8; --com:#6B7690;
+  --ok:#1E7A46; --bad:#B3261E; --warn:#E0A800;
+  --f-head:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --f-body:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+  --f-code:"JetBrains Mono",ui-monospace,Consolas,monospace;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#131A29; --panel:#1B2336; --panel-2:#212B41; --ink:#E6EAF2; --muted:#9AA6BD; --line:#33405A;
+    --accent:#8FA8FF; --accent-ink:#0F1629; --tag:#5CC8C2; --attr:#E58BC9; --val:#F0A868; --kw:#8FA8FF; --com:#8390AA;
+    --ok:#5BD38B; --bad:#FF8A80; --warn:#F5D547;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#131A29; --panel:#1B2336; --panel-2:#212B41; --ink:#E6EAF2; --muted:#9AA6BD; --line:#33405A;
+  --accent:#8FA8FF; --accent-ink:#0F1629; --tag:#5CC8C2; --attr:#E58BC9; --val:#F0A868; --kw:#8FA8FF; --com:#8390AA;
+  --ok:#5BD38B; --bad:#FF8A80; --warn:#F5D547;
+}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 16px);scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{transition:none!important}}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.6 var(--f-body)}
+a{color:var(--accent)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+code,pre,kbd,textarea.code{font-family:var(--f-code)}
+code{font-size:.88em;background:var(--panel-2);border:1px solid var(--line);padding:.05em .35em;border-radius:4px}
+kbd{font-size:.8em;border:1px solid var(--line);border-bottom-width:3px;border-radius:5px;padding:.1em .45em;background:var(--panel)}
+h1,h2,h3{font-family:var(--f-head);line-height:1.15;margin:0 0 .5em}
+h2{font-size:clamp(1.6rem,3vw,2.2rem);font-weight:800}
+h3{font-size:1.15rem;font-weight:600}
+p{margin:0 0 1em;max-width:68ch}
+.shell{display:grid;grid-template-columns:260px minmax(0,1fr);max-width:1320px;margin:0 auto}
+.side{position:sticky;top:env(safe-area-inset-top,0px);height:100vh;overflow:auto;padding:28px 18px;border-right:1px solid var(--line)}
+.side .course{font-family:var(--f-head);font-weight:800;font-size:1.05rem}
+.side .sub{color:var(--muted);font-size:.85rem;margin-bottom:14px}
+.progress{height:8px;background:var(--line);border-radius:6px;overflow:hidden;margin:6px 0 4px}
+.progress i{display:block;height:100%;background:var(--ok);width:0;transition:width .3s}
+.ptext{font-size:.82rem;color:var(--muted);margin-bottom:18px}
+.side ol{list-style:none;padding:0;margin:0}
+.side a{display:flex;gap:10px;align-items:baseline;padding:7px 10px;border-radius:8px;text-decoration:none;color:var(--ink);font-size:.92rem}
+.side a .n{font-family:var(--f-code);font-size:.76rem;color:var(--muted);min-width:1.4em}
+.side a .ck{margin-left:auto;color:var(--ok);font-weight:700}
+.side a:hover{background:var(--panel)}
+.side a.on{background:var(--accent);color:var(--accent-ink)}
+.side a.on .n{color:var(--accent-ink)}
+main{padding:0 clamp(18px,4vw,56px) 80px;min-width:0}
+section{padding:60px 0 28px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:0}
+.lead{font-size:1.1rem;color:var(--muted)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px}
+.note{border-left:4px solid var(--accent);background:var(--panel);padding:14px 18px;border-radius:0 10px 10px 0;margin:18px 0;max-width:74ch}
+.note.warn{border-left-color:var(--warn)}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}
+.btn{font:600 .9rem var(--f-body);border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:8px 14px;border-radius:999px;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.scroll-x{overflow-x:auto}
+.c-tag{color:var(--tag);font-weight:600}.c-attr{color:var(--attr)}.c-val{color:var(--val)}.c-pun{color:var(--muted)}.c-com{color:var(--com);font-style:italic}.c-kw{color:var(--kw);font-weight:600}.c-sel{color:var(--tag);font-weight:600}.c-prop{color:var(--attr)}
+.label{font-size:.85rem;color:var(--muted);margin:0 0 6px;font-weight:700}
+
+/* hero */
+.hero{padding:52px 0 36px;border-bottom:1px solid var(--line)}
+.hero h1{font-size:clamp(2.3rem,5.5vw,4rem);font-weight:800;letter-spacing:-.02em;max-width:14ch;margin-bottom:.35em}
+.kicker{color:var(--muted);margin-bottom:14px}
+.config{display:grid;grid-template-columns:1.3fr 1.6fr .8fr;gap:14px;margin-top:22px;max-width:900px}
+.config label{display:block;font-size:.85rem;font-weight:700;color:var(--muted);margin-bottom:4px}
+.config input[type=text]{width:100%;font:1rem var(--f-body);padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink)}
+.config input[type=color]{width:100%;height:46px;border-radius:10px;border:1px solid var(--line);background:var(--panel);padding:4px;cursor:pointer}
+.cwarn{font-size:.88rem;color:var(--bad);margin-top:8px;min-height:1.2em}
+
+/* pasos */
+.steps{list-style:none;padding:0;margin:0 0 16px;counter-reset:t}
+.steps li{position:relative;padding:0 0 12px 40px;max-width:74ch;counter-increment:t}
+.steps li::before{content:counter(t);position:absolute;left:0;top:1px;width:26px;height:26px;border-radius:50%;background:var(--panel);border:1.5px solid var(--line);display:grid;place-items:center;font:600 .78rem var(--f-code);color:var(--muted)}
+.codebox{border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:12px 0;background:var(--panel-2)}
+.codehead{display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid var(--line);background:var(--panel);font-size:.85rem}
+.codehead .file{font:600 .82rem var(--f-code)}
+.codehead .where{color:var(--muted)}
+.codehead .btn{margin-left:auto;padding:4px 12px;font-size:.8rem}
+.codebox pre{margin:0;padding:14px 16px;font-size:.82rem;line-height:1.6;overflow-x:auto;white-space:pre;max-height:520px}
+details.full{margin:6px 0 14px}
+details.full summary,details.err summary{cursor:pointer;color:var(--accent);font-weight:700;font-size:.93rem}
+details.err{border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin:14px 0;background:var(--panel);max-width:80ch}
+details.err ul{margin:10px 0 0;padding-left:1.2em;font-size:.95rem}
+details.err li{margin-bottom:8px}
+.pv{margin:14px 0}
+.pvbar{display:flex;align-items:center;gap:10px;padding:8px 12px;border:1px solid var(--line);border-bottom:0;border-radius:10px 10px 0 0;background:var(--panel)}
+.pvbar .dots{display:flex;gap:5px}.pvbar .dots i{width:10px;height:10px;border-radius:50%;background:var(--line);display:block}
+.pvbar .addr{flex:1;min-width:0;font:.78rem var(--f-code);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pvbar .btn{padding:3px 10px;font-size:.78rem}
+.pvstage{border:1px solid var(--line);border-radius:0 0 10px 10px;background:repeating-linear-gradient(45deg,var(--panel-2) 0 8px,var(--bg) 8px 16px);overflow:hidden}
+.pvhost{margin:0 auto;width:100%;max-height:560px;overflow:auto;background:#fff;transition:width .25s}
+.pvhost.phone{width:375px;max-width:100%;border-left:1px solid var(--line);border-right:1px solid var(--line)}
+.check{display:flex;align-items:center;gap:12px;margin-top:18px;padding:14px 16px;border:2px dashed var(--line);border-radius:12px;max-width:620px;cursor:pointer;font-weight:700}
+.check input{width:22px;height:22px;accent-color:var(--ok);cursor:pointer}
+.check.done{border-style:solid;border-color:var(--ok);color:var(--ok)}
+.tree{font:.88rem/1.8 var(--f-code);background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:14px 18px;white-space:pre;overflow-x:auto;margin:12px 0}
+.final-ed textarea{width:100%;min-height:340px;resize:vertical;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--panel-2);color:var(--ink);font:.8rem/1.55 var(--f-code);tab-size:2}
+table.plain{border-collapse:collapse;width:100%;font-size:.93rem}
+table.plain th,table.plain td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+table.plain th{font-size:.82rem;color:var(--muted)}
+.hide{display:none!important}
+
+@media (max-width:980px){
+  .shell{grid-template-columns:1fr}
+  .side{position:sticky;top:0;height:auto;z-index:5;background:var(--bg);border-right:0;border-bottom:1px solid var(--line);padding:10px 12px;padding-top:calc(10px + env(safe-area-inset-top,0px))}
+  .side .course,.side .sub,.ptext{display:none}
+  .progress{margin:0 0 8px}
+  .side ol{display:flex;overflow-x:auto;gap:4px}
+  .side a{white-space:nowrap;font-size:.84rem}
+  .two,.config{grid-template-columns:1fr}
+}
+@media (max-width:600px){body{font-size:17px}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <aside class="side">
+    <div class="course">Tu primer sitio web</div>
+    <div class="sub">Taller de Programación II</div>
+    <div class="progress" aria-hidden="true"><i id="pbar"></i></div>
+    <div class="ptext" id="ptext"></div>
+    <nav aria-label="Pasos de la guía"><ol id="toc"></ol></nav>
+  </aside>
+
+  <main>
+    <header class="hero">
+      <p class="kicker">Taller de Programación II, guía práctica</p>
+      <h1>Tu primer sitio web desde cero</h1>
+      <p class="lead">Vas a construir la página de un emprendimiento, paso a paso, sin experiencia previa. Cada paso tiene el código para copiar, cómo debería verse y qué hacer si algo no funciona. Al final lo vas a publicar en Internet y lo vas a scrapear con Python.</p>
+      <p>Empezá por acá: escribí los datos de tu emprendimiento (real o inventado). Todo el código de la guía se va a adaptar solo.</p>
+      <div class="config">
+        <div><label for="cfNombre">Nombre del emprendimiento</label><input type="text" id="cfNombre" maxlength="40"></div>
+        <div><label for="cfFrase">Frase que lo describa</label><input type="text" id="cfFrase" maxlength="80"></div>
+        <div><label for="cfColor">Color principal</label><input type="color" id="cfColor"></div>
+      </div>
+      <div class="cwarn" id="cwarn" aria-live="polite"></div>
+      <div class="pv" style="max-width:900px">
+        <div class="pvbar"><div class="dots"><i></i><i></i><i></i></div><div class="addr">Así va a quedar cuando termines</div></div>
+        <div class="pvstage"><div class="pvhost" id="heroPv"></div></div>
+      </div>
+    </header>
+
+    <div id="stepsRoot"></div>
+  </main>
+</div>
+
+<script>
+(function(){
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const escT = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+/* ---------- resaltado ---------- */
+function hlHTML(src){
+  let e = escT(src);
+  e = e.replace(/&lt;!DOCTYPE[^&]*&gt;/gi, m => `<span class="c-com">${m}</span>`);
+  e = e.replace(/&lt;!--[\s\S]*?--&gt;/g, m => `<span class="c-com">${m}</span>`);
+  e = e.replace(/(&lt;\/?)([a-zA-Z][\w-]*)([^<>]*?)(\/?&gt;)/g, (m,a,t,attrs,b) => {
+    attrs = attrs.replace(/([\w:-]+)(?:=("[^"]*"))?/g, (mm,n,v) => `<span class="c-attr">${n}</span>` + (v ? `=<span class="c-val">${v}</span>` : ''));
+    return `<span class="c-pun">${a}</span><span class="c-tag">${t}</span>${attrs}<span class="c-pun">${b}</span>`;
+  });
+  return e;
+}
+function hlCSS(src){
+  return escT(src).replace(/(\/\*[\s\S]*?\*\/)|([^{}\s;][^{};]*?)(\s*\{)|([\w-]+)(\s*:\s*)([^;{}\n]+)(;)/g,
+    (m,com,sel,br,prop,colon,val,semi) => {
+      if (com) return `<span class="c-com">${com}</span>`;
+      if (sel) return `<span class="c-sel">${sel}</span>${br}`;
+      return `<span class="c-prop">${prop}</span>${colon}<span class="c-val">${val}</span>${semi}`;
+    });
+}
+function hlPy(src){
+  return escT(src).replace(/(#[^\n]*)|("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*')|\b(import|from|for|in|print|if|else|def|return|as|None|True|False|with|not)\b/g,
+    (m,c,s,k) => c ? `<span class="c-com">${m}</span>` : s ? `<span class="c-val">${m}</span>` : `<span class="c-kw">${m}</span>`);
+}
+const HL = {html:hlHTML, css:hlCSS, py:hlPy, txt:escT};
+
+/* ---------- estado ---------- */
+const DEF = {nombre:'Panadería Aurora', frase:'Pan de masa madre, hecho a mano todos los días', color:'#8C3B1E'};
+let cfg = {...DEF};
+try { const s = JSON.parse(localStorage.getItem('guiaSitioCfg')||'null'); if (s) cfg = {...DEF, ...s}; } catch(e){}
+let done = new Set();
+try { const s = JSON.parse(localStorage.getItem('guiaSitioDone')||'null'); if (s) done = new Set(s); } catch(e){}
+function save(){ try{ localStorage.setItem('guiaSitioCfg', JSON.stringify(cfg)); localStorage.setItem('guiaSitioDone', JSON.stringify([...done])); }catch(e){} }
+
+/* ---------- generadores de código ---------- */
+const PRODS = [
+  ['producto1','Producto estrella','Contá en una línea qué lo hace especial.','$12.000'],
+  ['producto2','Combo del mes','Qué incluye y para quién es ideal.','$18.500'],
+  ['producto3','Edición especial','Algo de temporada o por tiempo limitado.','$9.800']
+];
+function article(p, step, ind){
+  const i = ' '.repeat(ind);
+  return `${i}<article class="producto">\n` +
+    (step>=4 ? `${i}  <img src="img/${p[0]}.jpg" alt="Foto de ${p[1].toLowerCase()}">\n` : '') +
+    `${i}  <h3>${p[1]}</h3>\n${i}  <p class="descripcion">${p[2]}</p>\n${i}  <p class="precio">${p[3]}</p>\n${i}</article>`;
+}
+const FORM = `      <form class="formulario">
+        <label for="nombre">Tu nombre</label>
+        <input type="text" id="nombre" name="nombre" required>
+
+        <label for="email">Tu email</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="mensaje">Mensaje</label>
+        <textarea id="mensaje" name="mensaje" rows="4"></textarea>
+
+        <button type="submit">Enviar mensaje</button>
+      </form>`;
+function bodyAt(step){
+  const n = esc(cfg.nombre||'Mi emprendimiento'), f = esc(cfg.frase||'');
+  if (step < 3) return `<body>\n  <h1>${n}</h1>\n</body>`;
+  const contactP = step>=4 ? `      <p>Escribinos a <a href="mailto:hola@miemprendimiento.com">hola@miemprendimiento.com</a> o dejanos tu mensaje.</p>` : `      <p>Escribinos y te respondemos en el día.</p>`;
+  return `<body>
+  <header class="cabecera">
+    <h1>${n}</h1>
+    <p class="frase">${f}</p>
+    <nav class="menu">
+      <a href="#nosotros">Nosotros</a>
+      <a href="#productos">Productos</a>
+      <a href="#contacto">Contacto</a>
+    </nav>
+  </header>
+
+  <main>
+    <section id="nosotros">
+      <h2>Quiénes somos</h2>
+      <p>Somos un emprendimiento que empezó en casa y hoy llega a todo el barrio. Acá contás tu historia en dos o tres oraciones.</p>
+    </section>
+
+    <section id="productos">
+      <h2>Nuestros productos</h2>
+      <div class="productos">
+${PRODS.map(p => article(p, step, 8)).join('\n')}
+      </div>
+    </section>
+
+    <section id="contacto">
+      <h2>Contacto</h2>
+${contactP}${step>=9 ? '\n' + FORM : ''}
+    </section>
+  </main>
+
+  <footer class="pie">
+    <p>&copy; 2026 ${n}</p>${step>=4 ? `\n    <p>Seguinos en <a href="https://www.instagram.com/" target="_blank">Instagram</a></p>` : ''}
+  </footer>
+</body>`;
+}
+function htmlAt(step){
+  const n = esc(cfg.nombre||'Mi emprendimiento');
+  return `<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${n}</title>${step>=5 ? '\n  <link rel="stylesheet" href="estilos.css">' : ''}
+</head>
+${bodyAt(step)}
+</html>`;
+}
+const CSS5 = `body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #222222;
+  background: #fafafa;
+  line-height: 1.6;
+}`;
+function css6(){ return `:root {
+  --color-principal: ${cfg.color};
+  --color-texto: #222222;
+  --color-fondo: #fafafa;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  color: var(--color-texto);
+  background: var(--color-fondo);
+  line-height: 1.6;
+}
+
+/* Encabezado */
+.cabecera {
+  background: var(--color-principal);
+  color: white;
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.cabecera h1 {
+  margin: 0;
+  font-size: 2.5rem;
+}
+
+.frase {
+  margin: 8px 0 20px;
+  font-size: 1.2rem;
+}
+
+.menu a {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  margin: 0 12px;
+}
+
+.menu a:hover {
+  text-decoration: underline;
+}
+
+/* Secciones */
+section {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+h2 {
+  color: var(--color-principal);
+}
+
+/* Pie de página */
+.pie {
+  background: #222222;
+  color: white;
+  text-align: center;
+  padding: 20px;
+}
+
+.pie a {
+  color: white;
+}`; }
+const CSS7 = `/* Tarjetas de productos */
+.productos {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.producto {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.producto img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.precio {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: var(--color-principal);
+}`;
+const CSS8 = `/* Pantallas chicas (celulares) */
+@media (max-width: 700px) {
+  .productos {
+    grid-template-columns: 1fr;
+  }
+
+  .cabecera h1 {
+    font-size: 1.8rem;
+  }
+
+  .menu a {
+    display: inline-block;
+    margin: 4px 8px;
+  }
+}`;
+const CSS9 = `/* Formulario de contacto */
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 500px;
+}
+
+.formulario label {
+  font-weight: bold;
+}
+
+.formulario input,
+.formulario textarea {
+  padding: 10px;
+  border: 1px solid #cccccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+.formulario button {
+  background: var(--color-principal);
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.formulario button:hover {
+  opacity: 0.9;
+}`;
+function cssAt(step){
+  if (step < 5) return '';
+  if (step < 6) return CSS5;
+  let c = css6();
+  if (step >= 7) c += '\n\n' + CSS7;
+  if (step >= 9) c += '\n\n' + CSS9;
+  if (step >= 8) c += '\n\n' + CSS8;
+  return c;
+}
+
+/* ---------- vista previa ---------- */
+function ph(name){
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 180'><rect width='300' height='180' fill='${cfg.color}' opacity='0.18'/><circle cx='150' cy='78' r='34' fill='${cfg.color}' opacity='0.35'/><text x='150' y='156' font-family='Arial' font-size='14' text-anchor='middle' fill='#444'>img/${name}.jpg</text></svg>`;
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+}
+function previewCSS(css){
+  return css
+    .replace(/:root\s*\{/g, '.wrap {')
+    .replace(/(^|\n|\})\s*body\s*\{/g, '$1\n.wrap {')
+    .replace(/@media\s*\(max-width/g, '@container (max-width');
+}
+function renderPreview(host, html, css){
+  const root = host.shadowRoot || host.attachShadow({mode:'open'});
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  doc.querySelectorAll('script').forEach(s => s.remove());
+  doc.querySelectorAll('img').forEach(img => { const m = (img.getAttribute('src')||'').match(/img\/([\w-]+)\./); if (m) img.setAttribute('src', ph(m[1])); });
+  const base = `:host{all:initial;display:block}.wrap{container-type:inline-size;background:#fff;color:#000;font-family:"Times New Roman",serif;min-height:100%}`;
+  root.innerHTML = `<style>${base}</style><style>${previewCSS(css).replace(/<\//g,'')}</style><div class="wrap">${doc.body.innerHTML}</div>`;
+  if (!root._bound){
+    root.addEventListener('click', e => { const a = e.target.closest && e.target.closest('a'); if (!a) return; e.preventDefault(); const h = a.getAttribute('href')||''; if (h.startsWith('#')){ const t = root.querySelector(h); if (t) host.scrollTo({top: t.offsetTop - 8, behavior:'smooth'}); } });
+    root.addEventListener('submit', e => { e.preventDefault(); const b = root.querySelector('button[type=submit]'); if (b){ const t=b.textContent; b.textContent='El formulario todavía no envía nada (ver paso 9)'; setTimeout(()=>b.textContent=t,2200);} });
+    root._bound = true;
+  }
+}
+function previewBlock(id, label){
+  return `<div class="pv"><div class="pvbar"><div class="dots"><i></i><i></i><i></i></div><div class="addr">${label}</div>
+  <button class="btn" data-dev="${id}" aria-pressed="false">Ver como celular</button></div>
+  <div class="pvstage"><div class="pvhost" id="${id}"></div></div></div>`;
+}
+
+/* ---------- contenido de los pasos ---------- */
+function codeBox(id, lang, file, where, getCode){
+  return {id, lang, file, where, getCode};
+}
+const STEPS = [
+ {id:'entorno', t:'Preparar el entorno', lead:'Un sitio web es una carpeta con archivos de texto. Para escribirlos vamos a usar un editor de código gratuito y una extensión que muestra la página en vivo mientras escribís.',
+  body:() => `<ol class="steps">
+    <li>Descargá e instalá <strong>Visual Studio Code</strong> desde <code>code.visualstudio.com</code>. Si ya lo tenés porque lo usás para Python, salteá este paso.</li>
+    <li>Abrilo, andá al ícono de Extensiones en la barra izquierda (o <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd>), buscá <strong>Live Server</strong> (el de Ritwick Dey) e instalalo.</li>
+    <li>En tu computadora, creá una carpeta llamada <code>mi-sitio</code>. Adentro, creá otra carpeta llamada <code>img</code>.</li>
+    <li>En VS Code: <strong>Archivo, Abrir carpeta</strong>, y elegí <code>mi-sitio</code>.</li>
+    <li>Con el botón de "Nuevo archivo" del panel izquierdo, creá dos archivos: <code>index.html</code> y <code>estilos.css</code>.</li>
+  </ol>
+  <p class="label">Tu carpeta tiene que quedar así</p>
+  <div class="tree">mi-sitio/
+├── index.html      <span class="c-com">← el contenido (HTML)</span>
+├── estilos.css     <span class="c-com">← el diseño (CSS)</span>
+└── img/            <span class="c-com">← las fotos (en el paso 4)</span></div>
+  <div class="note">El archivo principal se llama siempre <code>index.html</code>. Es el que los servidores muestran por defecto cuando alguien entra a tu dominio. Usá minúsculas y sin espacios ni tildes en los nombres de archivos: <code>foto-local.jpg</code>, no <code>Foto Local.JPG</code>.</div>`,
+  errs:['<strong>No veo la extensión de los archivos en Windows:</strong> en el Explorador, pestaña Vista, activá "Extensiones de nombre de archivo". Si no, podés terminar con un <code>index.html.txt</code> sin darte cuenta.',
+        '<strong>No aparece Live Server:</strong> después de instalarlo, cerrá y volvé a abrir VS Code.'],
+  check:'Tengo VS Code con Live Server y la carpeta mi-sitio con sus archivos'},
+
+ {id:'esqueleto', t:'El esqueleto HTML', lead:'Toda página HTML tiene la misma estructura base. No hace falta memorizarla: VS Code la escribe por vos.',
+  body:() => `<ol class="steps">
+    <li>Abrí <code>index.html</code>, escribí un signo de exclamación <code>!</code> y apretá <kbd>Tab</kbd> (o <kbd>Enter</kbd> si aparece la sugerencia). Esto se llama Emmet y te genera el esqueleto completo.</li>
+    <li>Cambiá <code>lang="en"</code> por <code>lang="es"</code>, el texto de <code>&lt;title&gt;</code> por el nombre de tu emprendimiento, y agregá un <code>&lt;h1&gt;</code> dentro del <code>&lt;body&gt;</code>. Tiene que quedar como abajo.</li>
+    <li>Guardá (<kbd>Ctrl</kbd>+<kbd>S</kbd>). Hacé clic derecho sobre el código y elegí <strong>Open with Live Server</strong>. Se abre el navegador con tu página.</li>
+  </ol>`,
+  code:[codeBox('c2','html','index.html','archivo completo', () => htmlAt(2))],
+  after:() => `<div class="scroll-x"><table class="plain">
+    <tr><th>Línea</th><th>Para qué sirve</th></tr>
+    <tr><td><code>&lt;!DOCTYPE html&gt;</code></td><td>Le avisa al navegador que es HTML moderno (HTML5).</td></tr>
+    <tr><td><code>&lt;html lang="es"&gt;</code></td><td>Envuelve todo. El <code>lang</code> ayuda a buscadores y lectores de pantalla.</td></tr>
+    <tr><td><code>&lt;head&gt;</code></td><td>Información <em>sobre</em> la página, no visible: codificación, título de la pestaña, CSS.</td></tr>
+    <tr><td><code>&lt;meta charset="UTF-8"&gt;</code></td><td>Para que se vean bien las tildes y la ñ.</td></tr>
+    <tr><td><code>&lt;meta name="viewport"&gt;</code></td><td>Para que en el celular no se vea como una página de computadora achicada. La usamos en el paso 8.</td></tr>
+    <tr><td><code>&lt;body&gt;</code></td><td>Todo lo que se ve.</td></tr>
+  </table></div>`,
+  preview:'http://127.0.0.1:5500/index.html',
+  errs:['<strong>El <code>!</code> no genera nada:</strong> fijate que el archivo termine en <code>.html</code> y que abajo a la derecha VS Code diga "HTML". Si el archivo es nuevo y no tiene nombre, guardalo primero.',
+        '<strong>No aparece "Open with Live Server":</strong> también podés usar el botón "Go Live" de la barra azul de abajo.',
+        '<strong>Las tildes se ven raras (Ã©):</strong> te falta la línea <code>&lt;meta charset="UTF-8"&gt;</code>.'],
+  check:'Veo el nombre de mi emprendimiento en el navegador'},
+
+ {id:'contenido', t:'El contenido', lead:'Ahora cargamos todo el texto de la página, organizado con etiquetas semánticas: cada una dice qué rol cumple esa parte. Va a verse feo. Es normal: el diseño llega en el paso 5.',
+  body:() => `<ol class="steps">
+    <li>En <code>index.html</code>, reemplazá todo el bloque <code>&lt;body&gt;...&lt;/body&gt;</code> por el de abajo.</li>
+    <li>Cambiá los textos de ejemplo por los tuyos: la historia en "Quiénes somos", los nombres, descripciones y precios de los productos.</li>
+    <li>Guardá y mirá el navegador: Live Server lo actualiza solo.</li>
+  </ol>`,
+  code:[codeBox('c3','html','index.html','reemplaza el body', () => bodyAt(3))],
+  after:() => `<div class="scroll-x"><table class="plain">
+    <tr><th>Etiqueta</th><th>Qué es</th></tr>
+    <tr><td><code>header</code></td><td>El encabezado: nombre, frase y menú.</td></tr>
+    <tr><td><code>nav</code></td><td>El menú de navegación. Cada <code>href="#nosotros"</code> salta a la sección que tiene <code>id="nosotros"</code>.</td></tr>
+    <tr><td><code>main</code></td><td>El contenido principal. Hay uno solo por página.</td></tr>
+    <tr><td><code>section</code></td><td>Cada bloque temático. El <code>id</code> es su nombre único.</td></tr>
+    <tr><td><code>article</code></td><td>Una pieza que tiene sentido sola: cada producto.</td></tr>
+    <tr><td><code>h1</code>, <code>h2</code>, <code>h3</code></td><td>Títulos por jerarquía. Un solo <code>h1</code> por página.</td></tr>
+    <tr><td><code>footer</code></td><td>El pie de página.</td></tr>
+  </table></div>
+  <div class="note">Fijate en los atributos <code>class</code> (<code>producto</code>, <code>precio</code>, <code>cabecera</code>): no cambian nada visualmente todavía, pero son los "ganchos" que después usa el CSS para darles estilo, y los mismos que usa BeautifulSoup para encontrarlos al scrapear.</div>`,
+  preview:'http://127.0.0.1:5500/index.html',
+  errs:['<strong>Se ve todo pegado o falta una parte:</strong> probablemente borraste un cierre de etiqueta como <code>&lt;/section&gt;</code>. Usá <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd> para ordenar el código: la sangría mal ubicada delata el error.',
+        '<strong>Los links del menú no saltan:</strong> el <code>href="#contacto"</code> tiene que coincidir exactamente con <code>id="contacto"</code>, sin el numeral en el id.'],
+  check:'Tengo todo el texto de mi emprendimiento cargado'},
+
+ {id:'imagenes', t:'Imágenes y enlaces', lead:'Una imagen no se "pega" en el HTML: el HTML dice dónde está el archivo, y el navegador lo busca.',
+  body:() => `<ol class="steps">
+    <li>Conseguí tres fotos de tus productos. Si no tenés, usá bancos de imágenes gratuitos como Unsplash o Pexels (revisá la licencia de cada foto).</li>
+    <li>Renombralas <code>producto1.jpg</code>, <code>producto2.jpg</code> y <code>producto3.jpg</code> y copialas a la carpeta <code>img</code>. Si pesan más de 1 MB, achicalas con cualquier compresor online: la página va a cargar más rápido.</li>
+    <li>Dentro de cada <code>&lt;article&gt;</code>, agregá la línea del <code>&lt;img&gt;</code> justo antes del <code>&lt;h3&gt;</code>.</li>
+    <li>Actualizá el párrafo de contacto y el pie con los enlaces.</li>
+  </ol>`,
+  code:[
+    codeBox('c4a','html','index.html','dentro de cada article, antes del h3', () => `<img src="img/producto1.jpg" alt="Foto de producto estrella">\n<!-- en el segundo: producto2.jpg, en el tercero: producto3.jpg -->`),
+    codeBox('c4b','html','index.html','reemplaza el párrafo de #contacto', () => `<p>Escribinos a <a href="mailto:hola@miemprendimiento.com">hola@miemprendimiento.com</a> o dejanos tu mensaje.</p>`),
+    codeBox('c4c','html','index.html','dentro del footer, debajo del ©', () => `<p>Seguinos en <a href="https://www.instagram.com/" target="_blank">Instagram</a></p>`)
+  ],
+  full:'html',
+  after:() => `<div class="scroll-x"><table class="plain">
+    <tr><th>Atributo</th><th>Para qué sirve</th></tr>
+    <tr><td><code>src</code></td><td>La ruta al archivo de la imagen, relativa a <code>index.html</code>.</td></tr>
+    <tr><td><code>alt</code></td><td>Texto alternativo: lo leen los lectores de pantalla y aparece si la imagen no carga. Nunca lo dejes vacío en fotos con contenido.</td></tr>
+    <tr><td><code>href</code></td><td>El destino del enlace. Puede ser otra página, una sección (<code>#id</code>) o un mail (<code>mailto:</code>).</td></tr>
+    <tr><td><code>target="_blank"</code></td><td>Abre el enlace en una pestaña nueva. Útil para sitios externos.</td></tr>
+  </table></div>`,
+  preview:'http://127.0.0.1:5500/index.html',
+  errs:['<strong>Aparece un ícono de imagen rota:</strong> la ruta no coincide con el archivo. Revisá mayúsculas (<code>Producto1.JPG</code> no es lo mismo que <code>producto1.jpg</code> en un servidor), la extensión (<code>.jpeg</code> vs. <code>.jpg</code>, <code>.png</code>) y que la foto esté dentro de <code>img</code>.',
+        '<strong>La imagen es gigante:</strong> es normal por ahora. En el paso 7 le damos tamaño con CSS.'],
+  check:'Se ven mis tres fotos y los enlaces funcionan'},
+
+ {id:'conectar', t:'Conectar el CSS', lead:'HTML es el contenido; CSS es el diseño. Viven en archivos separados y se conectan con una sola línea.',
+  body:() => `<ol class="steps">
+    <li>En <code>index.html</code>, dentro del <code>&lt;head&gt;</code>, debajo del <code>&lt;title&gt;</code>, agregá la línea <code>&lt;link&gt;</code>.</li>
+    <li>Abrí <code>estilos.css</code> y pegá la primera regla.</li>
+    <li>Guardá los dos archivos. Si la letra de la página cambió, la conexión funciona.</li>
+  </ol>`,
+  code:[
+    codeBox('c5a','html','index.html','dentro del head, debajo del title', () => `<link rel="stylesheet" href="estilos.css">`),
+    codeBox('c5b','css','estilos.css','archivo completo', () => CSS5)
+  ],
+  after:() => `<p>Cada regla CSS tiene la misma forma: un <strong>selector</strong> (a quién le aplico el estilo), y entre llaves, pares <strong>propiedad: valor;</strong> (qué cambio y cómo). Esta regla apunta a <code>body</code>, así que afecta a toda la página.</p>`,
+  preview:'http://127.0.0.1:5500/index.html',
+  errs:['<strong>No cambia nada:</strong> revisá que <code>href="estilos.css"</code> coincida exactamente con el nombre del archivo y que ambos estén en la misma carpeta. Probá recargar con <kbd>Ctrl</kbd>+<kbd>F5</kbd>.',
+        '<strong>Se aplica una parte y otra no:</strong> casi siempre falta un <code>;</code> al final de una línea o una llave <code>}</code> de cierre.'],
+  check:'Cambió la tipografía: el CSS está conectado'},
+
+ {id:'estilo', t:'Colores y tipografía', lead:'Ahora sí le damos identidad. Vamos a guardar los colores en variables para poder cambiarlos en un solo lugar.',
+  body:() => `<ol class="steps">
+    <li>Reemplazá todo el contenido de <code>estilos.css</code> por el de abajo. Ya tiene tu color principal.</li>
+    <li>Guardá y mirá el resultado.</li>
+    <li>Probá cambiar el valor de <code>--color-principal</code>: se actualizan el encabezado, los títulos y (más adelante) los botones, todo junto.</li>
+  </ol>`,
+  code:[codeBox('c6','css','estilos.css','reemplaza todo el archivo', () => css6())],
+  after:() => `<div class="scroll-x"><table class="plain">
+    <tr><th>Selector</th><th>Apunta a</th></tr>
+    <tr><td><code>.cabecera</code></td><td>Elementos con <code>class="cabecera"</code> (el punto indica clase).</td></tr>
+    <tr><td><code>.cabecera h1</code></td><td>Los <code>h1</code> que estén dentro de <code>.cabecera</code>.</td></tr>
+    <tr><td><code>.menu a:hover</code></td><td>Los links del menú, solo mientras el mouse está encima.</td></tr>
+    <tr><td><code>section</code></td><td>Todas las secciones. <code>max-width</code> + <code>margin: 0 auto</code> las centra con un ancho máximo.</td></tr>
+    <tr><td><code>var(--color-principal)</code></td><td>Usa el valor guardado en la variable.</td></tr>
+  </table></div>`,
+  preview:'http://127.0.0.1:5500/index.html',
+  errs:['<strong>El color no aparece:</strong> las variables se escriben con dos guiones (<code>--color-principal</code>) y se usan con <code>var(...)</code>.',
+        '<strong>El texto del encabezado casi no se lee:</strong> tu color principal es muy claro para letra blanca. Elegí uno más oscuro, o cambiá <code>color: white</code> por <code>color: #222222</code> en <code>.cabecera</code> y <code>.menu a</code>.'],
+  check:'Mi página ya tiene los colores de mi emprendimiento'},
+
+ {id:'tarjetas', t:'Tarjetas de productos', lead:'Los productos tienen que verse uno al lado del otro. Para eso usamos CSS Grid: le decimos al contenedor cuántas columnas quiere y él acomoda a sus hijos.',
+  body:() => `<ol class="steps">
+    <li>Agregá este bloque al <strong>final</strong> de <code>estilos.css</code>, sin borrar lo anterior.</li>
+    <li>Guardá. Los productos quedan en tres columnas y las fotos, del mismo tamaño.</li>
+  </ol>`,
+  code:[codeBox('c7','css','estilos.css','agregar al final', () => CSS7)],
+  full:'css',
+  after:() => `<div class="scroll-x"><table class="plain">
+    <tr><th>Propiedad</th><th>Qué hace</th></tr>
+    <tr><td><code>display: grid</code></td><td>Convierte a <code>.productos</code> en una grilla.</td></tr>
+    <tr><td><code>repeat(3, 1fr)</code></td><td>Tres columnas de igual ancho (<code>fr</code> = fracción del espacio libre).</td></tr>
+    <tr><td><code>gap</code></td><td>Espacio entre tarjetas.</td></tr>
+    <tr><td><code>object-fit: cover</code></td><td>Recorta la foto para llenar el espacio sin deformarla.</td></tr>
+    <tr><td><code>box-shadow</code></td><td>Una sombra suave que despega la tarjeta del fondo.</td></tr>
+  </table></div>`,
+  preview:'http://127.0.0.1:5500/index.html',
+  errs:['<strong>Siguen uno debajo del otro:</strong> la regla <code>.productos</code> tiene que apuntar al <code>&lt;div class="productos"&gt;</code> que envuelve a los tres <code>article</code>. Si falta ese div en el HTML, la grilla no tiene a quién ordenar.',
+        '<strong>Las fotos se ven estiradas:</strong> falta <code>object-fit: cover</code>.'],
+  check:'Mis productos se ven en tres columnas'},
+
+ {id:'celular', t:'Que se vea bien en el celular', lead:'Más de la mitad de las visitas llegan desde un teléfono. Tres columnas en una pantalla de 375 píxeles no entran. Una media query aplica reglas solo cuando la pantalla es chica.',
+  body:() => `<ol class="steps">
+    <li>Agregá este bloque al final de <code>estilos.css</code>.</li>
+    <li>Para probarlo, en el navegador abrí las herramientas de desarrollo (<kbd>F12</kbd>) y activá la vista de dispositivo con <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd>. Elegí un modelo de celular arriba.</li>
+    <li>También podés usar el botón "Ver como celular" de la vista previa de esta guía.</li>
+  </ol>`,
+  code:[codeBox('c8','css','estilos.css','agregar al final', () => CSS8)],
+  full:'css',
+  after:() => `<p><code>@media (max-width: 700px)</code> significa: "si la pantalla mide 700 píxeles de ancho o menos, aplicá estas reglas". Las reglas de adentro pisan a las de afuera solo en ese caso. Esto funciona gracias a la línea <code>&lt;meta name="viewport"&gt;</code> que quedó en el <code>head</code> desde el paso 2.</p>`,
+  preview:'http://127.0.0.1:5500/index.html',
+  errs:['<strong>En el celular sigue viéndose en tres columnas:</strong> la media query tiene que estar al final del archivo, después de la regla <code>.productos</code> original. En CSS, a igual selector, gana la última regla.',
+        '<strong>En el teléfono real se ve diminuto:</strong> falta la línea <code>&lt;meta name="viewport" ...&gt;</code> en el head.'],
+  check:'En vista de celular los productos quedan en una columna'},
+
+ {id:'formulario', t:'Formulario de contacto', lead:'Un formulario recolecta datos del visitante. Con HTML lo dibujamos; para que los envíe a algún lado hace falta un servidor o un servicio externo.',
+  body:() => `<ol class="steps">
+    <li>En <code>index.html</code>, dentro de <code>&lt;section id="contacto"&gt;</code>, debajo del párrafo, agregá el formulario.</li>
+    <li>Agregá los estilos al final de <code>estilos.css</code>, <strong>antes</strong> del bloque <code>@media</code> (así la media query sigue siendo lo último).</li>
+    <li>Probá dejar el email vacío y apretar el botón: el navegador te frena solo gracias a <code>required</code> y <code>type="email"</code>.</li>
+  </ol>`,
+  code:[
+    codeBox('c9a','html','index.html','dentro de #contacto, debajo del párrafo', () => FORM.replace(/^ {6}/gm,'')),
+    codeBox('c9b','css','estilos.css','antes del bloque @media', () => CSS9)
+  ],
+  full:'both',
+  after:() => `<div class="scroll-x"><table class="plain">
+    <tr><th>Elemento</th><th>Para qué sirve</th></tr>
+    <tr><td><code>&lt;label for="email"&gt;</code></td><td>El texto del campo. El <code>for</code> lo vincula con el <code>id</code> del input: hacer clic en la etiqueta activa el campo.</td></tr>
+    <tr><td><code>type="email"</code></td><td>Valida que tenga formato de mail y en el celular muestra un teclado con @.</td></tr>
+    <tr><td><code>name</code></td><td>El nombre con el que viaja el dato cuando el formulario se envía.</td></tr>
+    <tr><td><code>required</code></td><td>Campo obligatorio.</td></tr>
+  </table></div>
+  <div class="note warn">Por ahora el formulario no envía nada: al apretar el botón, la página se recarga. Para recibir los mensajes hace falta un backend. Pueden usar un servicio gratuito como Formspree, o esperar a la Unidad 6, donde vamos a mandar mails automáticos con Python.</div>`,
+  preview:'http://127.0.0.1:5500/index.html',
+  errs:['<strong>Hacer clic en la etiqueta no activa el campo:</strong> el <code>for</code> del label y el <code>id</code> del input tienen que ser iguales.',
+        '<strong>Los campos quedan uno al lado del otro:</strong> falta <code>display: flex</code> y <code>flex-direction: column</code> en <code>.formulario</code>.'],
+  check:'Mi formulario se ve y valida los campos'},
+
+ {id:'publicar', t:'Publicarlo en Internet', lead:'Hasta ahora tu sitio vive en tu computadora (127.0.0.1 es "esta misma máquina"). Para que cualquiera pueda entrar, hay que subirlo a un servidor. Hay opciones gratuitas.',
+  body:() => `<h3>Opción rápida: Netlify Drop</h3>
+  <ol class="steps">
+    <li>Entrá a <code>app.netlify.com/drop</code> y creá una cuenta gratuita (podés entrar con Google o GitHub).</li>
+    <li>Arrastrá la carpeta <code>mi-sitio</code> completa a la zona que te indica la página.</li>
+    <li>En unos segundos te da una dirección del tipo <code>https://algo-raro-123.netlify.app</code>. En la configuración del sitio podés cambiar ese nombre por uno más prolijo.</li>
+    <li>Abrila desde tu celular para comprobar que funciona fuera de tu computadora.</li>
+  </ol>
+  <h3 style="margin-top:22px">Opción más profesional: GitHub Pages</h3>
+  <ol class="steps">
+    <li>Creá una cuenta en GitHub y un repositorio nuevo llamado, por ejemplo, <code>mi-sitio</code>.</li>
+    <li>Subí los archivos con "Add file, Upload files" (arrastrando <code>index.html</code>, <code>estilos.css</code> y la carpeta <code>img</code>).</li>
+    <li>En el repositorio: Settings, Pages, y en "Branch" elegí <code>main</code>. Guardá.</li>
+    <li>Tu sitio queda en <code>https://tu-usuario.github.io/mi-sitio</code>. Puede tardar un par de minutos la primera vez.</li>
+  </ol>
+  <div class="note">GitHub Pages además te deja un portfolio visible: sirve para el CV y LinkedIn. Las interfaces de estos servicios cambian seguido; si algún botón no está donde dice la guía, buscá la opción con nombre parecido.</div>`,
+  errs:['<strong>Se publicó pero sin estilos o sin fotos:</strong> subiste los archivos sueltos y se perdió la estructura, o hay diferencias de mayúsculas en los nombres. Los servidores distinguen <code>Producto1.jpg</code> de <code>producto1.jpg</code>, aunque tu computadora no.',
+        '<strong>Error 404 en GitHub Pages:</strong> el archivo principal tiene que llamarse exactamente <code>index.html</code>, en minúsculas, y estar en la raíz del repositorio.'],
+  check:'Mi sitio tiene una dirección pública y lo abrí desde el celular'},
+
+ {id:'scrapear', t:'Scrapeá tu propio sitio', lead:'Cerramos el círculo: tu página ya está en Internet, así que podés leerla con Python igual que cualquier otra. Y esta vez conocés el HTML porque lo escribiste vos.',
+  body:() => `<ol class="steps">
+    <li>Si no lo hiciste, instalá las librerías: <code>pip install requests beautifulsoup4</code>.</li>
+    <li>Reemplazá la URL por la de tu sitio publicado y ejecutá el script.</li>
+    <li>Agregá a tu sitio un cuarto producto, volvé a publicarlo y corré el script otra vez: tiene que aparecer sin cambiar una línea de Python.</li>
+  </ol>`,
+  code:[codeBox('c11','py','scraper.py','archivo nuevo, fuera de la carpeta del sitio', () => `import requests
+from bs4 import BeautifulSoup
+
+url = "https://TU-SITIO.netlify.app"   # tu dirección pública
+respuesta = requests.get(url, timeout=10)
+print("Estado:", respuesta.status_code)
+
+soup = BeautifulSoup(respuesta.text, "html.parser")
+print("Título:", soup.title.get_text())
+
+for producto in soup.select(".producto"):
+    nombre = producto.find("h3").get_text(strip=True)
+    precio = producto.find("p", class_="precio").get_text(strip=True)
+    foto = producto.find("img")["src"]
+    print(nombre, precio, foto)`)],
+  after:() => `<p class="label">Salida esperada</p><pre class="code" style="margin:0;padding:14px 16px;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;font-size:.82rem;overflow-x:auto" id="pyOut"></pre>
+  <div class="note">Pensá qué pasaría si alguien le cambia el nombre a la clase <code>precio</code> por <code>costo</code>: el scraper dejaría de encontrarla. Esa es la fragilidad del scraping, y por qué conviene elegir selectores estables.</div>`,
+  errs:['<strong><code>ModuleNotFoundError: No module named \'bs4\'</code>:</strong> falta instalar <code>beautifulsoup4</code> (se instala con ese nombre, se importa como <code>bs4</code>).',
+        '<strong><code>AttributeError: \'NoneType\' object has no attribute \'get_text\'</code>:</strong> <code>find()</code> no encontró el elemento y devolvió <code>None</code>. Revisá que la clase en tu HTML sea exactamente la que buscás.'],
+  check:'Mi script de Python lista mis productos'}
+];
+
+/* ---------- entrega ---------- */
+const FINAL = {id:'final', t:'Checklist de entrega'};
+
+/* ---------- render ---------- */
+const root = $('#stepsRoot');
+let html = '';
+STEPS.forEach((s,i) => {
+  html += `<section id="${s.id}"><h2>${s.t}</h2><p class="lead">${s.lead}</p>${s.body()}`;
+  (s.code||[]).forEach(c => {
+    html += `<div class="codebox"><div class="codehead"><span class="file">${c.file}</span><span class="where">${c.where}</span><button class="btn" data-copy="${c.id}">Copiar</button></div><pre id="${c.id}"></pre></div>`;
+  });
+  if (s.full){
+    const files = s.full==='both' ? ['html','css'] : [s.full];
+    files.forEach(f => {
+      html += `<details class="full"><summary>Ver ${f==='html'?'index.html':'estilos.css'} completo hasta este paso</summary><div class="codebox"><div class="codehead"><span class="file">${f==='html'?'index.html':'estilos.css'}</span><button class="btn" data-copy="full-${s.id}-${f}">Copiar</button></div><pre id="full-${s.id}-${f}"></pre></div></details>`;
+    });
+  }
+  if (s.after) html += s.after();
+  if (s.preview) html += `<p class="label" style="margin-top:18px">Así debería verse</p>` + previewBlock('pv-'+s.id, s.preview);
+  if (s.errs) html += `<details class="err"><summary>No me funciona</summary><ul>${s.errs.map(e=>`<li>${e}</li>`).join('')}</ul></details>`;
+  html += `<label class="check" id="ck-${s.id}"><input type="checkbox" data-step="${s.id}"> ${s.check}</label></section>`;
+});
+html += `<section id="final"><h2>Checklist de entrega</h2>
+  <p class="lead">Antes de entregar, revisá cada punto. Si podés tildar todos, tu sitio está listo.</p>
+  <div class="scroll-x"><table class="plain">
+    <tr><th>Revisión</th><th>Cómo comprobarlo</th></tr>
+    <tr><td>El título de la pestaña es el nombre del emprendimiento</td><td>Mirá la pestaña del navegador.</td></tr>
+    <tr><td>Hay un solo <code>h1</code></td><td><kbd>Ctrl</kbd>+<kbd>F</kbd> en tu HTML buscando <code>&lt;h1</code>.</td></tr>
+    <tr><td>Todas las imágenes tienen <code>alt</code> descriptivo</td><td>Leelas en el código: ¿alguien que no ve la foto entiende qué es?</td></tr>
+    <tr><td>Los tres links del menú llevan a su sección</td><td>Hacé clic en cada uno.</td></tr>
+    <tr><td>Se ve bien en celular</td><td>Abrí la dirección pública desde tu teléfono.</td></tr>
+    <tr><td>No hay textos de ejemplo de la guía</td><td>Buscá "Acá contás" y "Contá en una línea".</td></tr>
+    <tr><td>El código está ordenado</td><td><kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd> en VS Code y verificá la sangría.</td></tr>
+    <tr><td>El scraper lista tus productos</td><td>Adjuntá una captura de la salida.</td></tr>
+  </table></div>
+  <h3 style="margin-top:30px">Taller libre: el sitio completo</h3>
+  <p>Este es el código final con tus datos. Podés editarlo acá mismo y ver el resultado, por ejemplo si en el laboratorio no tienen VS Code instalado. Copialo a tus archivos cuando termines.</p>
+  <div class="two final-ed">
+    <div><div class="row" style="justify-content:space-between;margin-bottom:6px"><span class="label" style="margin:0">index.html</span><button class="btn" data-copy-ta="edHtml">Copiar</button></div><textarea id="edHtml" spellcheck="false" aria-label="index.html"></textarea></div>
+    <div><div class="row" style="justify-content:space-between;margin-bottom:6px"><span class="label" style="margin:0">estilos.css</span><button class="btn" data-copy-ta="edCss">Copiar</button></div><textarea id="edCss" spellcheck="false" aria-label="estilos.css"></textarea></div>
+  </div>
+  ${previewBlock('pv-final','Taller libre')}
+  <div class="row"><button class="btn" id="resetEd">Restaurar el código de la guía</button><button class="btn" id="resetAll">Borrar mi progreso</button></div>
+</section>`;
+root.innerHTML = html;
+
+/* ---------- nav ---------- */
+const toc = $('#toc');
+toc.innerHTML = STEPS.map((s,i) => `<li><a href="#${s.id}"><span class="n">${i+1}</span>${s.t}<span class="ck" id="tk-${s.id}"></span></a></li>`).join('') +
+  `<li><a href="#final"><span class="n">✓</span>${FINAL.t}</a></li>`;
+
+/* ---------- actualizar todo ---------- */
+function stepNum(id){ return STEPS.findIndex(s => s.id===id) + 1; }
+function refreshCode(){
+  STEPS.forEach(s => {
+    (s.code||[]).forEach(c => { $('#'+c.id).innerHTML = HL[c.lang](c.getCode()); });
+    const n = stepNum(s.id);
+    if (s.full){
+      const pH = $(`#full-${s.id}-html`), pC = $(`#full-${s.id}-css`);
+      if (pH) pH.innerHTML = hlHTML(htmlAt(n));
+      if (pC) pC.innerHTML = hlCSS(cssAt(n));
+    }
+    if (s.preview) renderPreview($('#pv-'+s.id), htmlAt(n), cssAt(n));
+  });
+  renderPreview($('#heroPv'), htmlAt(99), cssAt(99));
+  const out = ['Estado: 200', 'Título: ' + (cfg.nombre||'Mi emprendimiento')];
+  PRODS.forEach(p => out.push(`${p[1]} ${p[3]} img/${p[0]}.jpg`));
+  $('#pyOut').textContent = out.join('\n');
+}
+function contrastWarn(){
+  const h = cfg.color.replace('#','');
+  const [r,g,b] = [0,2,4].map(i => parseInt(h.substr(i,2),16)/255).map(v => v<=0.03928 ? v/12.92 : Math.pow((v+0.055)/1.055,2.4));
+  const L = 0.2126*r + 0.7152*g + 0.0722*b;
+  const ratio = 1.05/(L+0.05);
+  $('#cwarn').textContent = ratio < 4.5 ? 'Con este color, el texto blanco del encabezado se va a leer mal. Elegí un tono más oscuro.' : '';
+}
+function refreshProgress(){
+  STEPS.forEach(s => {
+    const ok = done.has(s.id);
+    $('#ck-'+s.id).classList.toggle('done', ok);
+    $('#ck-'+s.id).querySelector('input').checked = ok;
+    $('#tk-'+s.id).textContent = ok ? '✓' : '';
+  });
+  const pct = Math.round(done.size / STEPS.length * 100);
+  $('#pbar').style.width = pct + '%';
+  $('#ptext').textContent = `${done.size} de ${STEPS.length} pasos completos`;
+}
+function resetEditors(){ $('#edHtml').value = htmlAt(99); $('#edCss').value = cssAt(99); renderFinal(); }
+function renderFinal(){ renderPreview($('#pv-final'), $('#edHtml').value, $('#edCss').value); }
+
+/* ---------- eventos ---------- */
+const inN = $('#cfNombre'), inF = $('#cfFrase'), inC = $('#cfColor');
+inN.value = cfg.nombre; inF.value = cfg.frase; inC.value = cfg.color;
+let tmr, edited = false;
+function onCfg(){
+  cfg.nombre = inN.value.trim() || 'Mi emprendimiento'; cfg.frase = inF.value.trim(); cfg.color = inC.value;
+  clearTimeout(tmr); tmr = setTimeout(() => { refreshCode(); contrastWarn(); if (!edited) resetEditors(); save(); }, 180);
+}
+[inN, inF, inC].forEach(el => el.addEventListener('input', onCfg));
+
+document.addEventListener('change', e => {
+  const st = e.target.dataset && e.target.dataset.step;
+  if (!st) return;
+  e.target.checked ? done.add(st) : done.delete(st);
+  refreshProgress(); save();
+});
+function copyText(text, btn){
+  const ok = () => { const t = btn.textContent; btn.textContent = 'Copiado'; setTimeout(() => btn.textContent = t, 1400); };
+  const fallback = () => {
+    const ta = document.createElement('textarea'); ta.value = text; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select();
+    let r = false; try { r = document.execCommand('copy'); } catch(e){}
+    ta.remove();
+    if (r) ok(); else { btn.textContent = 'Seleccioná y usá Ctrl+C'; setTimeout(()=>btn.textContent='Copiar',2200); }
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(ok, fallback); else fallback();
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.copy){ copyText($('#'+b.dataset.copy).textContent, b); }
+  if (b.dataset.copyTa){ copyText($('#'+b.dataset.copyTa).value, b); }
+  if (b.dataset.dev){
+    const host = $('#'+b.dataset.dev); const on = !host.classList.contains('phone');
+    host.classList.toggle('phone', on); b.setAttribute('aria-pressed', String(on)); b.textContent = on ? 'Ver como computadora' : 'Ver como celular';
+  }
+});
+$('#edHtml').addEventListener('input', () => { edited = true; clearTimeout(tmr); tmr = setTimeout(renderFinal, 250); });
+$('#edCss').addEventListener('input', () => { edited = true; clearTimeout(tmr); tmr = setTimeout(renderFinal, 250); });
+$('#resetEd').onclick = () => { edited = false; resetEditors(); };
+$('#resetAll').onclick = () => { done.clear(); cfg = {...DEF}; inN.value = cfg.nombre; inF.value = cfg.frase; inC.value = cfg.color; edited = false; save(); refreshCode(); contrastWarn(); refreshProgress(); resetEditors(); };
+
+const links = [...toc.querySelectorAll('a')];
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(en => {
+    if (en.isIntersecting){
+      links.forEach(l => l.classList.toggle('on', l.getAttribute('href') === '#'+en.target.id));
+      const act = links.find(l => l.classList.contains('on'));
+      if (act && window.innerWidth <= 980) act.scrollIntoView({block:'nearest', inline:'center'});
+    }
+  });
+}, {rootMargin:'-40% 0px -55% 0px'});
+document.querySelectorAll('main section').forEach(s => obs.observe(s));
+
+refreshCode(); contrastWarn(); refreshProgress(); resetEditors();
+})();
+</script>
+</body>
+</html>
